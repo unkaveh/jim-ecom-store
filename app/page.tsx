@@ -1,3 +1,4 @@
+"use client";
 import { ArtworkGrid } from "@/components/artwork-grid";
 import { Hero } from "@/components/hero";
 import { useRouter } from "next/router";
