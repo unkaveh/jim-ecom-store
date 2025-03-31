@@ -1,20 +1,33 @@
 [build]
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
 
-[build.environment]
-  NEXT_USE_NETLIFY_EDGE = "true"
+# Force admin path to use the index.html fallback
+[[redirects]]
+  from = "/admin"
+  to = "/admin/"
+  status = 301
+  force = true
 
 [[redirects]]
   from = "/admin/*"
   to = "/admin/index.html"
   status = 200
+  force = true
+
+# Add CORS headers for Netlify Identity
+[[headers]]
+  for = "/*"
+  [headers.values]
+    Access-Control-Allow-Origin = "*"
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
 
 [build.processing]
-  skip_processing = true
+  skip_processing = false
 
 [build.processing.html]
   pretty_urls = true

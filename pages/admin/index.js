@@ -1,43 +1,26 @@
 import { useEffect } from "react";
-import Script from "next/script";
+import Head from "next/head";
 
+// Simple admin page that defers to the CMS implementation
 export default function Admin() {
   useEffect(() => {
-    // Initialize Netlify Identity Widget
-    if (window.netlifyIdentity) {
-      window.netlifyIdentity.on("init", (user) => {
-        if (!user) {
-          window.netlifyIdentity.on("login", () => {
-            document.location.href = "/admin/";
-          });
-        }
-      });
+    // Only run on client side
+    if (typeof window !== "undefined") {
+      window.location.href = "/admin/index.html";
     }
   }, []);
 
   return (
     <>
-      <Script
-        src="https://identity.netlify.com/v1/netlify-identity-widget.js"
-        strategy="beforeInteractive"
-      />
-      <Script
-        id="netlify-admin"
-        strategy="afterInteractive"
-        dangerouslySetInnerHTML={{
-          __html: `
-            if (window.netlifyIdentity) {
-              window.netlifyIdentity.on("init", user => {
-                if (!user) {
-                  window.netlifyIdentity.on("login", () => {
-                    document.location.href = "/admin/";
-                  });
-                }
-              });
-            }
-          `,
-        }}
-      />
+      <Head>
+        <title>Content Manager</title>
+      </Head>
+      <div style={{ padding: "20px", textAlign: "center" }}>
+        <h1>Redirecting to Admin Interface...</h1>
+        <p>
+          If you are not redirected, <a href="/admin/index.html">click here</a>.
+        </p>
+      </div>
     </>
   );
 }
