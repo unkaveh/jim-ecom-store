@@ -1,38 +1,32 @@
 "use client";
 
-import { useEffect, useState } from 'react';
-import Image from 'next/image';
-import Link from 'next/link';
-import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
-import { formatPrice } from '@/lib/utils';
-import { Artwork } from '@/types/artwork';
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { formatPrice } from "@/lib/utils";
+import { Artwork } from "@/types/artwork";
 
-export function ArtworkGrid() {
-  const [artworks, setArtworks] = useState<Artwork[]>([]);
+interface ArtworkGridProps {
+  artworks: Artwork[];
+}
 
-  useEffect(() => {
-    // This would be replaced with actual CMS data fetching
-    const fetchArtworks = async () => {
-      // Temporary mock data
-      const mockArtworks: Artwork[] = [
-        {
-          id: '1',
-          title: 'Abstract Harmony',
-          description: 'A vibrant exploration of color and form',
-          price: 1200,
-          images: ['https://images.unsplash.com/photo-1541961017774-22349e4a1262?q=80&w=1000&h=1000'],
-          dimensions: { width: 30, height: 40, unit: 'inches' },
-          medium: 'Acrylic on Canvas',
-          createdAt: '2024-01-15',
-          available: true,
-        },
-        // Add more mock artworks here
-      ];
-      setArtworks(mockArtworks);
-    };
-
-    fetchArtworks();
-  }, []);
+export function ArtworkGrid({ artworks }: ArtworkGridProps) {
+  if (artworks.length === 0) {
+    return (
+      <div className="text-center py-12">
+        <p className="text-muted-foreground">
+          No artworks found. Check back soon!
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -58,6 +52,11 @@ export function ArtworkGrid() {
             </CardContent>
             <CardFooter className="p-4 pt-0">
               <p className="font-semibold">{formatPrice(artwork.price)}</p>
+              {!artwork.available && (
+                <span className="ml-auto text-sm text-muted-foreground">
+                  Sold
+                </span>
+              )}
             </CardFooter>
           </Card>
         </Link>

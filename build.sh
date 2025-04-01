@@ -15,4 +15,11 @@ cp -R public/admin/config.yml out/admin/
 cp public/_redirects out/
 cp public/admin.html out/
 
+# Copy content directories for CMS data
+echo "Copying content directories..."
+mkdir -p out/content/artwork out/content/pages
+cp -R content/artwork out/content/
+cp -R content/pages out/content/
+cp -R public/images out/
+
 echo "Build completed successfully!" 

@@ -1,5 +1,5 @@
 backend:
-  name: git-gateway
+  name: test-repo
   branch: main
 
 # Media folder settings
@@ -7,21 +7,44 @@ media_folder: "public/images/uploads"
 public_folder: "/images/uploads"
 
 collections:
-  - name: "products"
-    label: "Products"
-    folder: "content/products"
+  - name: "artwork"
+    label: "Artwork"
+    folder: "content/artwork"
     create: true
     slug: "{{slug}}"
     fields:
       - { label: "Title", name: "title", widget: "string" }
       - { label: "Description", name: "description", widget: "text" }
-      - { label: "Price", name: "price", widget: "number", value_type: "float" }
-      - { label: "Image", name: "image", widget: "image" }
       - {
-          label: "Featured",
-          name: "featured",
+          label: "Price",
+          name: "price",
+          widget: "number",
+          value_type: "float",
+          min: 0,
+        }
+      - {
+          label: "Images",
+          name: "images",
+          widget: "list",
+          field: { label: "Image", name: "image", widget: "image" },
+          min: 1,
+        }
+      - { label: "Width", name: "width", widget: "number" }
+      - { label: "Height", name: "height", widget: "number" }
+      - {
+          label: "Unit",
+          name: "unit",
+          widget: "select",
+          options: ["inches", "cm"],
+          default: "inches",
+        }
+      - { label: "Medium", name: "medium", widget: "string" }
+      - { label: "Creation Date", name: "createdAt", widget: "datetime" }
+      - {
+          label: "Available",
+          name: "available",
           widget: "boolean",
-          default: false,
+          default: true,
         }
 
   - name: "pages"
@@ -31,4 +54,11 @@ collections:
     slug: "{{slug}}"
     fields:
       - { label: "Title", name: "title", widget: "string" }
+      - { label: "Meta Description", name: "description", widget: "text" }
+      - {
+          label: "Featured Image",
+          name: "featuredImage",
+          widget: "image",
+          required: false,
+        }
       - { label: "Content", name: "body", widget: "markdown" }

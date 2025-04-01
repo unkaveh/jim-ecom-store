@@ -1,42 +1,48 @@
 "use client";
 
-import { useCart } from '@/components/cart-provider';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { formatPrice } from '@/lib/utils';
-import Image from 'next/image';
-import { loadStripe } from '@stripe/stripe-js';
+import { useCart } from "@/components/cart-provider";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { formatPrice } from "@/lib/utils";
+import Image from "next/image";
+import { loadStripe } from "@stripe/stripe-js";
 
-const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!);
+const stripePromise = loadStripe(
+  process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY!
+);
 
 export default function CartPage() {
   const { items, removeItem, updateQuantity, total } = useCart();
 
-  const handleCheckout = async () => {
-    try {
-      const stripe = await stripePromise;
-      if (!stripe) throw new Error('Stripe failed to load');
+  const handleCheckout = () => {
+    stripePromise
+      .then((stripe) => {
+        if (!stripe) throw new Error("Stripe failed to load");
 
-      const response = await fetch('/api/checkout', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ items }),
+        return fetch("/api/checkout", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ items }),
+        })
+          .then((response) => response.json())
+          .then(({ sessionId }) => {
+            return stripe.redirectToCheckout({ sessionId });
+          });
+      })
+      .catch((error) => {
+        console.error("Error during checkout:", error);
       });
-
-      const { sessionId } = await response.json();
-      await stripe.redirectToCheckout({ sessionId });
-    } catch (error) {
-      console.error('Error during checkout:', error);
-    }
   };
 
   if (items.length === 0) {
     return (
       <div className="text-center py-12">
         <h2 className="text-2xl font-bold mb-4">Your cart is empty</h2>
-        <p className="text-muted-foreground">Start shopping to add items to your cart.</p>
+        <p className="text-muted-foreground">
+          Start shopping to add items to your cart.
+        </p>
       </div>
     );
   }
@@ -59,14 +65,23 @@ export default function CartPage() {
                 </div>
                 <div className="flex-1">
                   <h3 className="font-semibold">{item.artwork.title}</h3>
-                  <p className="text-sm text-muted-foreground">{item.artwork.medium}</p>
+                  <p className="text-sm text-muted-foreground">
+                    {item.artwork.medium}
+                  </p>
                   <div className="mt-2 flex items-center justify-between">
-                    <p className="font-medium">{formatPrice(item.artwork.price)}</p>
+                    <p className="font-medium">
+                      {formatPrice(item.artwork.price)}
+                    </p>
                     <div className="flex items-center gap-2">
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => updateQuantity(item.artwork.id, Math.max(1, item.quantity - 1))}
+                        onClick={() =>
+                          updateQuantity(
+                            item.artwork.id,
+                            Math.max(1, item.quantity - 1)
+                          )
+                        }
                       >
                         -
                       </Button>
@@ -74,7 +89,9 @@ export default function CartPage() {
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => updateQuantity(item.artwork.id, item.quantity + 1)}
+                        onClick={() =>
+                          updateQuantity(item.artwork.id, item.quantity + 1)
+                        }
                       >
                         +
                       </Button>

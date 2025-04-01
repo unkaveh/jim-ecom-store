@@ -1,12 +1,14 @@
-import { ArtworkGrid } from "@/components/artwork-grid";
-import { Hero } from "@/components/hero";
-import { IdentityRedirect } from "@/components/identity-redirect";
 import fs from "fs";
 import path from "path";
 import matter from "gray-matter";
+import { ArtworkGrid } from "@/components/artwork-grid";
 import { Artwork } from "@/types/artwork";
 
-// Reuse the same artwork fetching logic
+export const metadata = {
+  title: "Gallery | Art Gallery",
+  description: "Browse our collection of fine art and contemporary artworks.",
+};
+
 async function getArtworks(): Promise<Artwork[]> {
   try {
     const contentDirectory = path.join(process.cwd(), "content", "artwork");
@@ -53,27 +55,26 @@ async function getArtworks(): Promise<Artwork[]> {
           new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
       );
 
-    // Limit to 3 featured items for homepage
-    return artworks.slice(0, 3);
+    return artworks;
   } catch (error) {
     console.error("Error fetching artwork:", error);
     return [];
   }
 }
 
-export default async function Home() {
+export default async function GalleryPage() {
   const artworks = await getArtworks();
 
   return (
-    <div className="space-y-12">
-      <IdentityRedirect />
-      <Hero />
-      <section className="container mx-auto py-12 px-4 md:px-6">
-        <h2 className="text-2xl font-bold mb-8 text-center">
-          Featured Artwork
-        </h2>
-        <ArtworkGrid artworks={artworks} />
-      </section>
-    </div>
+    <main className="container mx-auto py-12 px-4 md:px-6">
+      <div className="mb-12 text-center">
+        <h1 className="text-3xl font-bold md:text-4xl">Art Gallery</h1>
+        <p className="mt-4 text-muted-foreground">
+          Browse our collection of contemporary artworks
+        </p>
+      </div>
+
+      <ArtworkGrid artworks={artworks} />
+    </main>
   );
 }
