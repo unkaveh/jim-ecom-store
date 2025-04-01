@@ -1,7 +1,9 @@
 # Netlify _redirects file - prevents infinite redirection loops
 
-# Send /admin to the admin page
+# Directly serve the admin HTML
 /admin  /admin/index.html  200
+/admin/  /admin/index.html  200
+/admin/index  /admin/index.html  200
 
-# All other paths handled by Next.js
-/*      /index.html        200 
+# Let Next.js handle everything else - NOT index.html which is incorrect for Next.js
+/*    /.netlify/functions/nextjs-server    200 

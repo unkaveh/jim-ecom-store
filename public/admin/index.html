@@ -49,12 +49,9 @@
 
     <!-- Load Decap CMS -->
     <script>
-      // Check if we need to redirect and prevent redirect loops
-      function isAdminPath() {
-        return (
-          window.location.pathname.endsWith("/admin/index.html") ||
-          window.location.pathname.endsWith("/admin/")
-        );
+      // Clear any admin redirection flags to prevent loops
+      if (typeof sessionStorage !== "undefined") {
+        sessionStorage.removeItem("adminRedirected");
       }
 
       // Set up the login button
@@ -75,16 +72,8 @@
         window.netlifyIdentity.on("init", function (user) {
           if (!user) {
             window.netlifyIdentity.on("login", function () {
-              // Prevent redirect loops - only redirect if we're not already on an admin page
-              if (isAdminPath()) {
-                console.log(
-                  "Already on admin page, not redirecting after login"
-                );
-                window.location.reload(); // Just reload the current page instead
-              } else {
-                console.log("Redirecting to admin page after login");
-                document.location.href = "/admin/index.html";
-              }
+              // Just reload the current page after login
+              window.location.reload();
             });
           }
         });
@@ -96,9 +85,6 @@
         function hideLoading() {
           document.getElementById("loading").style.display = "none";
         }
-
-        // Add a global variable to track if we're on the CMS page
-        window.onCMSPage = true;
 
         // Load the CMS script
         var script = document.createElement("script");
