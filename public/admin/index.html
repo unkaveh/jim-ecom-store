@@ -32,6 +32,9 @@
         margin-top: 20px;
         font-size: 16px;
       }
+      #loading {
+        display: block;
+      }
     </style>
   </head>
   <body>
@@ -46,6 +49,14 @@
 
     <!-- Load Decap CMS -->
     <script>
+      // Check if we need to redirect and prevent redirect loops
+      function isAdminPath() {
+        return (
+          window.location.pathname.endsWith("/admin/index.html") ||
+          window.location.pathname.endsWith("/admin/")
+        );
+      }
+
       // Set up the login button
       document
         .getElementById("login-button")
@@ -59,12 +70,21 @@
           }
         });
 
-      // Set up Netlify Identity
+      // Set up Netlify Identity with redirect protection
       if (window.netlifyIdentity) {
         window.netlifyIdentity.on("init", function (user) {
           if (!user) {
             window.netlifyIdentity.on("login", function () {
-              document.location.href = "/admin/";
+              // Prevent redirect loops - only redirect if we're not already on an admin page
+              if (isAdminPath()) {
+                console.log(
+                  "Already on admin page, not redirecting after login"
+                );
+                window.location.reload(); // Just reload the current page instead
+              } else {
+                console.log("Redirecting to admin page after login");
+                document.location.href = "/admin/index.html";
+              }
             });
           }
         });
@@ -77,10 +97,18 @@
           document.getElementById("loading").style.display = "none";
         }
 
+        // Add a global variable to track if we're on the CMS page
+        window.onCMSPage = true;
+
         // Load the CMS script
         var script = document.createElement("script");
         script.src = "https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js";
         script.onload = hideLoading;
+        script.onerror = function (err) {
+          console.error("Failed to load CMS:", err);
+          document.getElementById("loading").innerHTML =
+            "<h1>Error Loading CMS</h1><p>There was a problem loading the content management system. Please try refreshing the page.</p>";
+        };
         document.body.appendChild(script);
       });
     </script>

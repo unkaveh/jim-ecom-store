@@ -1,0 +1,7 @@
+# Netlify _redirects file - prevents infinite redirection loops
+
+# Send /admin to the admin page
+/admin  /admin/index.html  200
+
+# All other paths handled by Next.js
+/*      /index.html        200 
